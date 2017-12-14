@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/bash -x
 # Various tests of LunarG Device Simulation (devsim) layer
 # Uses 'jq' v1.5 https://stedolan.github.io/jq/
 
@@ -30,7 +30,7 @@ export LD_LIBRARY_PATH=${PWD}/../submodules/Vulkan-LoaderAndValidationLayers/loa
 export VK_LAYER_PATH=${PWD}/../layersvt
 export VK_INSTANCE_LAYERS="VK_LAYER_LUNARG_device_simulation"
 
-#export VK_DEVSIM_DEBUG_ENABLE="1"
+export VK_DEVSIM_DEBUG_ENABLE="1"
 #export VK_DEVSIM_EXIT_ON_ERROR="1"
 #export VK_LOADER_DEBUG="all"
 
@@ -64,6 +64,7 @@ jq --slurp  --exit-status '.[0] == .[1]' ${FILENAME_01_TEMP1} ${FILENAME_01_TEMP
 [ $? -eq 0 ] || ERRMSG="jq file compare failed"
 
 #############################################################################
+cat ${FILENAME_01_STDOUT}
 
 if [ "$ERRMSG" ] ; then
    printf "$RED[  FAILED  ]$NC $ERRMSG\n"
