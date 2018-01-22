@@ -71,6 +71,15 @@ jq --slurp  --exit-status '.[0] == .[1]' devsim_test2_gold.json $FILENAME_02_TEM
 [ $? -eq 0 ] || fail_msg "test2 jq comparison"
 
 #############################################################################
+# Test 3: Exercise devsim's detection of requested Vulkan API version.
+
+#./CreateInstanceVersion.py 1 0 0
+#[ $? -eq 0 ] || fail_msg "version check 1.0.0"
+
+#./CreateInstanceVersion.py 1 1 0
+#[ $? -eq 0 ] || fail_msg "version check 1.1.0"
+
+#############################################################################
 
 printf "$GREEN[  PASSED  ]$NC $0\n"
 exit 0
