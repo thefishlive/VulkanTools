@@ -1,11 +1,9 @@
 #! /bin/bash
-# Simple test of devsim layer
-# Uses 'jq' v1.5 (https://stedolan.github.io/jq/) to extract sections of
-# test's JSON output and reformat for consistent comparison with gold file.
+# Various tests of LunarG Device Simulation (devsim) layer
+# Uses 'jq' v1.5 https://stedolan.github.io/jq/
 
-set errexit
-set nounset
-set physical
+set -o nounset
+set -o physical
 
 cd $(dirname "${BASH_SOURCE[0]}")
 
@@ -19,9 +17,16 @@ else
     NC=''
 fi
 
+ERRMSG=""
 printf "$GREEN[ RUN      ]$NC $0\n"
 
-export LD_LIBRARY_PATH=${PWD}/../submodules/Vulkan-LoaderAndValidationLayers/loader:${LD_LIBRARY_PATH}
+if [ -z "${DISPLAY:-}" ] ; then
+   printf "$RED[  FAILED  ]$NC environment variable DISPLAY requires a value\n"
+   exit 1
+fi
+#[ -n "${DISPLAY:-}" ] || export DISPLAY=":0"
+
+export LD_LIBRARY_PATH=${PWD}/../submodules/Vulkan-LoaderAndValidationLayers/loader:${LD_LIBRARY_PATH:-}
 export VK_LAYER_PATH=${PWD}/../layersvt
 export VK_INSTANCE_LAYERS="VK_LAYER_LUNARG_device_simulation"
 
@@ -29,37 +34,43 @@ export VK_INSTANCE_LAYERS="VK_LAYER_LUNARG_device_simulation"
 #export VK_DEVSIM_EXIT_ON_ERROR="1"
 #export VK_LOADER_DEBUG="all"
 
-VKJSON_INFO="${PWD}/../submodules/Vulkan-LoaderAndValidationLayers/libs/vkjson/vkjson_info"
-
 #############################################################################
-# Test #1 input datafile, and filename of output.
+# Test #1 Load config files, compare output of vkjson_info against a gold file.
+
+VKJSON_INFO="${PWD}/../submodules/Vulkan-LoaderAndValidationLayers/libs/vkjson/vkjson_info"
 
 FILENAME_01_IN="devsim_test1_in_ArrayOfVkFormatProperties.json:devsim_test1_in.json"
 FILENAME_01_GOLD="devsim_test1_gold.json"
 FILENAME_01_RESULT="device_simulation_layer_test_1.json"
 FILENAME_01_STDOUT="device_simulation_layer_test_1.txt"
+FILENAME_01_TEMP1="devsim_test1_temp1.txt"
+FILENAME_01_TEMP2="devsim_test1_temp2.txt"
 
+rm -f ${FILENAME_01_RESULT} ${FILENAME_01_STDOUT} ${FILENAME_01_TEMP1} ${FILENAME_01_TEMP2}
+
+# Generate test output using known-good input
 export VK_DEVSIM_FILENAME="${FILENAME_01_IN}"
 ${VKJSON_INFO} > ${FILENAME_01_STDOUT}
+[ $? -eq 0 ] || ERRMSG="${VKJSON_INFO} failed"
 
-# reformat/extract/sort vkjson output using jq, then compare against gold.
-diff ${FILENAME_01_GOLD} \
-    <(jq -S '{properties,features,memory,queues,formats}' ${FILENAME_01_RESULT}) \
-    >> ${FILENAME_01_STDOUT}
-RES=$?
-rm ${FILENAME_01_RESULT}
-rm ${FILENAME_01_STDOUT}
+# extract/sort/reformat files for predictable comparison
+jq -S '{properties,features,memory,queues,formats}' ${FILENAME_01_GOLD} > ${FILENAME_01_TEMP1}
+jq -S '{properties,features,memory,queues,formats}' ${FILENAME_01_RESULT} > ${FILENAME_01_TEMP2}
+
+diff ${FILENAME_01_TEMP1} ${FILENAME_01_TEMP2} >> ${FILENAME_01_STDOUT}
+[ $? -eq 0 ] || ERRMSG="diff file compare failed"
+
+jq --slurp  --exit-status '.[0] == .[1]' ${FILENAME_01_TEMP1} ${FILENAME_01_TEMP2} >> ${FILENAME_01_STDOUT}
+[ $? -eq 0 ] || ERRMSG="jq file compare failed"
 
 #############################################################################
 
-if [ "$RES" -eq 0 ] ; then
-   printf "$GREEN[  PASSED  ]$NC ${PGM}\n"
-else
-   printf "$RED[  FAILED  ]$NC file compare failed\n"
-   printf "TEST FAILED\n"
+if [ "$ERRMSG" ] ; then
+   printf "$RED[  FAILED  ]$NC $ERRMSG\n"
    exit 1
 fi
 
+printf "$GREEN[  PASSED  ]$NC ${PGM}\n"
 exit 0
 
 # vim: set sw=4 ts=8 et ic ai:
