@@ -756,7 +756,6 @@ bool JsonLoader::LoadFile(const char *filename) {
         ErrorPrintf("Json document root is not an object\n");
         return false;
     }
-    DebugPrintf("\t\tJsonLoader::LoadFile() OK\n");
 
     const Json::Value schema_value = root["$schema"];
     const SchemaId schema_id = IdentifySchema(schema_value);
@@ -777,7 +776,6 @@ bool JsonLoader::LoadFile(const char *filename) {
 }
 
 JsonLoader::SchemaId JsonLoader::IdentifySchema(const Json::Value &value) {
-    DebugPrintf("\t\tJsonLoader::IdentifySchema()\n");
     if (!value.isString()) {
         ErrorPrintf("JSON element \"$schema\" is not a string\n");
         return SchemaId::kUnknown;
@@ -820,7 +818,6 @@ void JsonLoader::GetValue(const Json::Value &parent, const char *name, VkPhysica
 }
 
 void JsonLoader::GetValue(const Json::Value &parent, const char *name, VkPhysicalDeviceLimits *dest) {
-    DebugPrintf("\t\tJsonLoader::GetValue(VkPhysicalDeviceLimits)\n");
     const Json::Value value = parent[name];
     if (value.type() != Json::objectValue) {
         return;
@@ -934,7 +931,6 @@ void JsonLoader::GetValue(const Json::Value &parent, const char *name, VkPhysica
 }
 
 void JsonLoader::GetValue(const Json::Value &parent, const char *name, VkPhysicalDeviceSparseProperties *dest) {
-    DebugPrintf("\t\tJsonLoader::GetValue(VkPhysicalDeviceSparseProperties)\n");
     const Json::Value value = parent[name];
     if (value.type() != Json::objectValue) {
         return;
@@ -1194,7 +1190,6 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceProperties(VkPhysicalDevice physical
     const auto dt = instance_dispatch_table(physicalDevice);
 
     PhysicalDeviceData *pdd = PhysicalDeviceData::Find(physicalDevice);
-    DebugPrintf("GetPhysicalDeviceProperties physicalDevice %p pdd %p\n", physicalDevice, pdd);
     if (pdd) {
         *pProperties = pdd->physical_device_properties_;
     } else {
@@ -1212,7 +1207,6 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFeatures(VkPhysicalDevice physicalDe
     const auto dt = instance_dispatch_table(physicalDevice);
 
     PhysicalDeviceData *pdd = PhysicalDeviceData::Find(physicalDevice);
-    DebugPrintf("GetPhysicalDeviceFeatures physicalDevice %p pdd %p\n", physicalDevice, pdd);
     if (pdd) {
         *pFeatures = pdd->physical_device_features_;
     } else {
@@ -1239,7 +1233,6 @@ VkResult EnumerateProperties(uint32_t src_count, const T *src_props, uint32_t *d
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL EnumerateInstanceLayerProperties(uint32_t *pCount, VkLayerProperties *pProperties) {
-    DebugPrintf("EnumerateInstanceLayerProperties\n");
     return EnumerateProperties(kLayerPropertiesCount, kLayerProperties, pCount, pProperties);
 }
 
@@ -1247,7 +1240,6 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateInstanceLayerProperties(uint32_t *pCount
 
 VKAPI_ATTR VkResult VKAPI_CALL EnumerateInstanceExtensionProperties(const char *pLayerName, uint32_t *pCount,
                                                                     VkExtensionProperties *pProperties) {
-    DebugPrintf("EnumerateInstanceExtensionProperties pLayerName \"%s\"\n", pLayerName);
     if (pLayerName && !strcmp(pLayerName, kOurLayerName)) {
         return EnumerateProperties(kExtensionPropertiesCount, kExtensionProperties, pCount, pProperties);
     }
@@ -1256,7 +1248,6 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateInstanceExtensionProperties(const char *
 
 VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevice physicalDevice, const char *pLayerName,
                                                                   uint32_t *pCount, VkExtensionProperties *pProperties) {
-    DebugPrintf("EnumerateDeviceExtensionProperties physicalDevice %p pLayerName \"%s\"\n", physicalDevice, pLayerName);
     std::lock_guard<std::mutex> lock(global_lock);
     const auto dt = instance_dispatch_table(physicalDevice);
 
@@ -1272,7 +1263,6 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceMemoryProperties(VkPhysicalDevice ph
     const auto dt = instance_dispatch_table(physicalDevice);
 
     PhysicalDeviceData *pdd = PhysicalDeviceData::Find(physicalDevice);
-    DebugPrintf("GetPhysicalDeviceMemoryProperties physicalDevice %p pdd %p\n", physicalDevice, pdd);
     if (pdd) {
         *pMemoryProperties = pdd->physical_device_memory_properties_;
     } else {
