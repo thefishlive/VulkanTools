@@ -7,6 +7,7 @@ if (NOT WIN32)
             COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/devsim_layer_test.sh
             COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/devsim_test1_in.json
             COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/devsim_test1_in_ArrayOfVkFormatProperties.json
+            COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/devsim_test1_in_ArrayOfVkExtensionProperties.json
             COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/devsim_test1_gold.json
             COMMAND ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/vlf_test.sh
             VERBATIM

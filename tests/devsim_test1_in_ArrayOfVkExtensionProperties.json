@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schema.khronos.org/vulkan/devsim_1_0_0.json#",
+  "comments": {
+    "url": "https://github.com/LunarG/VulkanTools/blob/master/tests/devsim_test1_in_ArrayOfVkExtensionProperties.json",
+    "desc": "A configuration file fragment for Device Simulation layer test.  By design, the DevSim layer does not enforce the use of 'sane' values; such enforcement is the job of the Validation layers.  The values in this file are deliberately 'insane', unique (to aid verification of each override) and huge (to trigger any debug warnings)."
+  },
+  "ArrayOfVkExtensionProperties": [
+    {
+      "extensionName": "DDD_foo",
+      "specVersion": 900006004
+    },
+    {
+      "extensionName": "AAA_bar",
+      "specVersion": 900006003
+    },
+    {
+      "extensionName": "CCC_biz",
+      "specVersion": 900006002
+    },
+    {
+      "extensionName": "BBB_baz",
+      "specVersion": 900006001
+    }
+  ]
+}

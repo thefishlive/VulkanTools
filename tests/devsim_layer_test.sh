@@ -39,7 +39,7 @@ export VK_DEVSIM_DEBUG_ENABLE="1"
 
 VKJSON_INFO="${PWD}/../submodules/Vulkan-LoaderAndValidationLayers/libs/vkjson/vkjson_info"
 
-FILENAME_01_IN="devsim_test1_in_ArrayOfVkFormatProperties.json:devsim_test1_in.json"
+FILENAME_01_IN="devsim_test1_in_ArrayOfVkFormatProperties.json:devsim_test1_in.json:devsim_test1_in_ArrayOfVkExtensionProperties.json"
 FILENAME_01_GOLD="devsim_test1_gold.json"
 FILENAME_01_RESULT="device_simulation_layer_test_1.json"
 FILENAME_01_STDOUT="device_simulation_layer_test_1.txt"
