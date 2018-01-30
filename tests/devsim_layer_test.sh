@@ -58,12 +58,12 @@ FILENAME_02_TEMP1="devsim_test2_temp1.json"
 FILENAME_02_TEMP2="devsim_test2_temp2.json"
 rm -f $FILENAME_02_TEMP1 $FILENAME_02_TEMP2
 
-export VK_DEVSIM_FILENAME="devsim_test2_in1.json:devsim_test2_in2.json:devsim_test2_in3.json:devsim_test2_in4.json:devsim_test2_in5.json"
+export VK_DEVSIM_FILENAME="devsim_test2_in1.json:devsim_test2_in2.json:devsim_test2_in3.json:devsim_test2_in4.json:devsim_test2_in5.json:devsim_test2_in6.json"
 "$LVL_BUILD_DIR/demos/vulkaninfo" -j > $FILENAME_02_TEMP1 2> /dev/null
 [ $? -eq 0 ] || fail_msg "test2 vulkaninfo"
 
 # Use jq to extract, reformat, and sort the output.
-JSON_SECTIONS='{VkPhysicalDeviceProperties,VkPhysicalDeviceFeatures,VkPhysicalDeviceMemoryProperties,ArrayOfVkQueueFamilyProperties,ArrayOfVkFormatProperties}'
+JSON_SECTIONS='{VkPhysicalDeviceProperties,VkPhysicalDeviceFeatures,VkPhysicalDeviceMemoryProperties,ArrayOfVkQueueFamilyProperties,ArrayOfVkFormatProperties,ArrayOfVkExtensionProperties}'
 jq -S $JSON_SECTIONS $FILENAME_02_TEMP1 > $FILENAME_02_TEMP2
 [ $? -eq 0 ] || fail_msg "test2 jq extraction"
 
