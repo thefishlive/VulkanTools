@@ -1308,7 +1308,7 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFormatProperties(VkPhysicalDevice ph
     const auto dt = instance_dispatch_table(physicalDevice);
 
     PhysicalDeviceData *pdd = PhysicalDeviceData::Find(physicalDevice);
-    DebugPrintf("GetPhysicalDeviceFormatProperties physicalDevice %p pdd %p\n", physicalDevice, pdd);
+    //DebugPrintf("GetPhysicalDeviceFormatProperties physicalDevice %p pdd %p\n", physicalDevice, pdd);
     if (pdd) {
         const auto iter = pdd->arrayof_format_properties_.find(format);
         *pFormatProperties = (iter != pdd->arrayof_format_properties_.end()) ? iter->second : VkFormatProperties{};

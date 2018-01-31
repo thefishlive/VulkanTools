@@ -57,14 +57,14 @@ ${VKJSON_INFO} > ${FILENAME_01_STDOUT}
 jq -S '{properties,features,memory,queues,formats}' ${FILENAME_01_GOLD} > ${FILENAME_01_TEMP1}
 jq -S '{properties,features,memory,queues,formats}' ${FILENAME_01_RESULT} > ${FILENAME_01_TEMP2}
 
-diff ${FILENAME_01_TEMP1} ${FILENAME_01_TEMP2} >> ${FILENAME_01_STDOUT}
+diff ${FILENAME_01_TEMP1} ${FILENAME_01_TEMP2}
 [ $? -eq 0 ] || ERRMSG="diff file compare failed"
 
-jq --slurp  --exit-status '.[0] == .[1]' ${FILENAME_01_TEMP1} ${FILENAME_01_TEMP2} >> ${FILENAME_01_STDOUT}
-[ $? -eq 0 ] || ERRMSG="jq file compare failed"
+#jq --slurp  --exit-status '.[0] == .[1]' ${FILENAME_01_TEMP1} ${FILENAME_01_TEMP2} >> ${FILENAME_01_STDOUT}
+#[ $? -eq 0 ] || ERRMSG="jq file compare failed"
 
 #############################################################################
-cat ${FILENAME_01_STDOUT}
+#cat ${FILENAME_01_STDOUT}
 
 if [ "$ERRMSG" ] ; then
    printf "$RED[  FAILED  ]$NC $ERRMSG\n"
