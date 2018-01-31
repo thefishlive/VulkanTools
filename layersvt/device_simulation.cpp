@@ -535,6 +535,7 @@ class JsonLoader {
     void GetValue(const Json::Value &parent, const char *name, VkExtent3D *dest);
     void GetValue(const Json::Value &parent, int index, VkQueueFamilyProperties *dest);
     void GetValue(const Json::Value &parent, int index, DevsimFormatProperties *dest);
+    void GetValue(const Json::Value &parent, int index, VkLayerProperties *dest);
     void GetValue(const Json::Value &parent, int index, VkExtensionProperties *dest);
 
     // For use as warn_func in GET_VALUE_WARN().  Return true if warning occurred.
@@ -729,6 +730,22 @@ class JsonLoader {
         return static_cast<int>(dest->size());
     }
 
+    int GetArray(const Json::Value &parent, const char *name, ArrayOfVkLayerProperties *dest) {
+        const Json::Value value = parent[name];
+        if (value.type() != Json::arrayValue) {
+            return -1;
+        }
+        DebugPrintf("\t\tJsonLoader::GetValue(ArrayOfVkLayerProperties)\n");
+        dest->clear();
+        const int count = static_cast<int>(value.size());
+        for (int i = 0; i < count; ++i) {
+            VkLayerProperties layer_properties = {};
+            GetValue(value, i, &layer_properties);
+            dest->push_back(layer_properties);
+        }
+        return static_cast<int>(dest->size());
+    }
+
     int GetArray(const Json::Value &parent, const char *name, ArrayOfVkExtensionProperties *dest) {
         const Json::Value value = parent[name];
         if (value.type() != Json::arrayValue) {
@@ -799,6 +816,8 @@ bool JsonLoader::LoadFile(const char *filename) {
             GetArray(root, "ArrayOfVkQueueFamilyProperties", &pdd_.arrayof_queue_family_properties_);
             GetArray(root, "ArrayOfVkFormatProperties", &pdd_.arrayof_format_properties_);
             GetArray(root, "ArrayOfVkExtensionProperties", &pdd_.arrayof_extension_properties_);
+            // TODO How to handle the ArrayOfVkLayerProperties section of devsim json?  Layers are not per-Device.
+            // GetArray(root, "ArrayOfVkLayerProperties", ???);
             break;
         case SchemaId::kUnknown:
         default:
@@ -1109,6 +1128,19 @@ void JsonLoader::GetValue(const Json::Value &parent, int index, DevsimFormatProp
     GET_VALUE(linearTilingFeatures);
     GET_VALUE(optimalTilingFeatures);
     GET_VALUE(bufferFeatures);
+}
+
+void JsonLoader::GetValue(const Json::Value &parent, int index, VkLayerProperties *dest) {
+    const Json::Value value = parent[index];
+    if (value.type() != Json::objectValue) {
+        return;
+    }
+    DebugPrintf("\t\tJsonLoader::GetValue(VkLayerProperties)\n");
+    GET_ARRAY(layerName);  // size < VK_MAX_EXTENSION_NAME_SIZE
+    GET_VALUE(specVersion);
+    GET_VALUE(implementationVersion);
+    GET_ARRAY(description);  // size < VK_MAX_DESCRIPTION_SIZE
+    DebugPrintf("INFO\t\t\tindex %" PRIu32 " layerName \"%s\" specVersion %" PRIu32 "\n", index, dest->layerName, dest->specVersion);
 }
 
 void JsonLoader::GetValue(const Json::Value &parent, int index, VkExtensionProperties *dest) {
