@@ -673,11 +673,11 @@ class JsonLoader {
     }
 
     int GetArray(const Json::Value &parent, const char *name, ArrayOfVkQueueFamilyProperties *dest) {
-        DebugPrintf("\t\tJsonLoader::GetArray(ArrayOfVkQueueFamilyProperties)\n");
         const Json::Value value = parent[name];
         if (value.type() != Json::arrayValue) {
             return -1;
         }
+        DebugPrintf("\t\tJsonLoader::GetArray(ArrayOfVkQueueFamilyProperties)\n");
         dest->clear();
         const int count = static_cast<int>(value.size());
         for (int i = 0; i < count; ++i) {
@@ -689,11 +689,11 @@ class JsonLoader {
     }
 
     int GetArray(const Json::Value &parent, const char *name, ArrayOfVkFormatProperties *dest) {
-        DebugPrintf("\t\tJsonLoader::GetArray(ArrayOfVkFormatProperties)\n");
         const Json::Value value = parent[name];
         if (value.type() != Json::arrayValue) {
             return -1;
         }
+        DebugPrintf("\t\tJsonLoader::GetArray(ArrayOfVkFormatProperties)\n");
         dest->clear();
         const int count = static_cast<int>(value.size());
         for (int i = 0; i < count; ++i) {
@@ -803,11 +803,11 @@ JsonLoader::SchemaId JsonLoader::IdentifySchema(const Json::Value &value) {
 #define GET_VALUE_WARN(name, warn_func) GetValue(value, #name, &dest->name, warn_func)
 
 void JsonLoader::GetValue(const Json::Value &parent, const char *name, VkPhysicalDeviceProperties *dest) {
-    DebugPrintf("\t\tJsonLoader::GetValue(VkPhysicalDeviceProperties)\n");
     const Json::Value value = parent[name];
     if (value.type() != Json::objectValue) {
         return;
     }
+    DebugPrintf("\t\tJsonLoader::GetValue(VkPhysicalDeviceProperties)\n");
     GET_VALUE(apiVersion);
     GET_VALUE(driverVersion);
     GET_VALUE(vendorID);
@@ -947,11 +947,11 @@ void JsonLoader::GetValue(const Json::Value &parent, const char *name, VkPhysica
 }
 
 void JsonLoader::GetValue(const Json::Value &parent, const char *name, VkPhysicalDeviceFeatures *dest) {
-    DebugPrintf("\t\tJsonLoader::GetValue(VkPhysicalDeviceFeatures)\n");
     const Json::Value value = parent[name];
     if (value.type() != Json::objectValue) {
         return;
     }
+    DebugPrintf("\t\tJsonLoader::GetValue(VkPhysicalDeviceFeatures)\n");
     GET_VALUE(robustBufferAccess);
     GET_VALUE(fullDrawIndexUint32);
     GET_VALUE(imageCubeArray);
@@ -1049,11 +1049,11 @@ void JsonLoader::GetValue(const Json::Value &parent, int index, VkMemoryHeap *de
 }
 
 void JsonLoader::GetValue(const Json::Value &parent, const char *name, VkPhysicalDeviceMemoryProperties *dest) {
-    DebugPrintf("\t\tJsonLoader::GetValue(VkPhysicalDeviceMemoryProperties)\n");
     const Json::Value value = parent[name];
     if (value.type() != Json::objectValue) {
         return;
     }
+    DebugPrintf("\t\tJsonLoader::GetValue(VkPhysicalDeviceMemoryProperties)\n");
     const int heap_count = GET_ARRAY(memoryHeaps);  // size <= VK_MAX_MEMORY_HEAPS
     if (heap_count >= 0) {
         dest->memoryHeapCount = heap_count;
