@@ -50,14 +50,14 @@ rm -f ${FILENAME_01_RESULT} ${FILENAME_01_STDOUT} ${FILENAME_01_TEMP1} ${FILENAM
 
 # Generate test output using known-good input
 export VK_DEVSIM_FILENAME="${FILENAME_01_IN}"
-${VKJSON_INFO} > ${FILENAME_01_STDOUT}
+${VKJSON_INFO}
 [ $? -eq 0 ] || ERRMSG="${VKJSON_INFO} failed"
 
 # extract/sort/reformat files for predictable comparison
 jq -S '{properties,features,memory,queues,formats}' ${FILENAME_01_GOLD} > ${FILENAME_01_TEMP1}
 jq -S '{properties,features,memory,queues,formats}' ${FILENAME_01_RESULT} > ${FILENAME_01_TEMP2}
 
-diff ${FILENAME_01_TEMP1} ${FILENAME_01_TEMP2}
+diff ${FILENAME_01_TEMP1} ${FILENAME_01_TEMP2} >> ${FILENAME_01_STDOUT}
 [ $? -eq 0 ] || ERRMSG="diff file compare failed"
 
 #jq --slurp  --exit-status '.[0] == .[1]' ${FILENAME_01_TEMP1} ${FILENAME_01_TEMP2} >> ${FILENAME_01_STDOUT}
