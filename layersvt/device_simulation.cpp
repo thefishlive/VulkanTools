@@ -753,7 +753,7 @@ bool JsonLoader::LoadFile(const char *filename) {
     json_file.close();
 
     if (root.type() != Json::objectValue) {
-        DebugPrintf("Json document root is not an object\n");
+        ErrorPrintf("Json document root is not an object\n");
         return false;
     }
     DebugPrintf("\t\tJsonLoader::LoadFile() OK\n");
