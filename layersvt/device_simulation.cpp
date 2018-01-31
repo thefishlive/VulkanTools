@@ -455,7 +455,7 @@ class PhysicalDeviceData {
         auto iter = result.first;
         PhysicalDeviceData *pdd = &iter->second;
         assert(Find(pd) == pdd);  // Verify we get the same instance we just inserted.
-        DebugPrintf("PDD Create() physical_device %p pdd %p\n", pd, pdd);
+        DebugPrintf("PDD Create() physical_device %p pdd %p ==================================\n", pd, pdd);
         return *pdd;
     }
 
@@ -1130,7 +1130,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo *pCreat
 
     // Get the name(s) of our configuration file(s).
     std::string filename = GetEnvarValue(kEnvarDevsimFilename);
-    DebugPrintf("\t\tenvar %s = \"%s\"\n", kEnvarDevsimFilename, filename.c_str());
+    DebugPrintf("envar %s = \"%s\"\n", kEnvarDevsimFilename, filename.c_str());
     if (filename.empty()) {
         ErrorPrintf("envar %s is unset\n", kEnvarDevsimFilename);
     }
