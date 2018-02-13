@@ -403,7 +403,7 @@ void ErrorPrintf(const char *fmt, ...) {
     }
 }
 
-// Get all elements from a vkEnumerate*() lambda into a properly-sized std::vector.
+// Get all elements from a vkEnumerate*() lambda into a std::vector.
 template <typename T>
 VkResult EnumerateAll(std::vector<T> *vect, std::function<VkResult(uint32_t *, T *)> func) {
 DebugPrintf("EnumerateAll ");
@@ -541,8 +541,8 @@ class JsonLoader {
     // For use as warn_func in GET_VALUE_WARN().  Return true if warning occurred.
     static bool WarnIfGreater(const char *name, const uint64_t new_value, const uint64_t old_value) {
         if (new_value > old_value) {
-            DebugPrintf("WARN \"%s\" JSON value (%" PRIu64 ") is greater than existing value (%" PRIu64 ")\n", name, new_value,
-                        old_value);
+//            DebugPrintf("WARN \"%s\" JSON value (%" PRIu64 ") is greater than existing value (%" PRIu64 ")\n", name, new_value,
+//                        old_value);
             return true;
         }
         return false;
@@ -1111,8 +1111,8 @@ void JsonLoader::GetValue(const Json::Value &parent, const char *name, VkPhysica
         dest->memoryTypeCount = type_count;
         for (int i = 0; i < type_count; ++i) {
             if (dest->memoryTypes[i].heapIndex >= dest->memoryHeapCount) {
-                DebugPrintf("WARN \"memoryType[%" PRIu32 "].heapIndex\" (%" PRIu32 ") exceeds memoryHeapCount (%" PRIu32 ")\n", i,
-                            dest->memoryTypes[i].heapIndex, dest->memoryHeapCount);
+//                DebugPrintf("WARN \"memoryType[%" PRIu32 "].heapIndex\" (%" PRIu32 ") exceeds memoryHeapCount (%" PRIu32 ")\n", i,
+//                            dest->memoryTypes[i].heapIndex, dest->memoryHeapCount);
             }
         }
     }
@@ -1209,10 +1209,13 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo *pCreat
 
     const auto dt = instance_dispatch_table(*pInstance);
 
-DebugPrintf("100\n");
+DebugPrintf("100 ########## instance_arrayof_layer_properties.clear() \n");
     // TODO Get list of instance layers (Remember: device layers are deprecated)
     instance_arrayof_layer_properties.clear();
-DebugPrintf("105 %p\n", dt->EnumerateInstanceLayerProperties);
+
+
+
+DebugPrintf("105 ########## EnumerateInstanceLayerProperties = %p\n", dt->EnumerateInstanceLayerProperties);
 #if 0
     assert(dt->EnumerateInstanceLayerProperties);
     result = EnumerateAll<VkLayerProperties>(&instance_arrayof_layer_properties, [&](uint32_t *count, VkLayerProperties *results) {
@@ -1223,12 +1226,12 @@ DebugPrintf("110\n");
         // TODO
         return result;
     }
-DebugPrintf("190\n");
+DebugPrintf("190 ########## EnumerateAll<VkExtensionProperties> \n");
     // Temporarily append a "null_layer" as a proxy for pLayerName==NULL in Enumerate*ExtensionProperties().
     const VkLayerProperties null_layer = {"", 0, 0, ""};
     instance_arrayof_layer_properties.push_back(null_layer);
 
-DebugPrintf("200\n");
+DebugPrintf("200 ########## \n");
     // Get list of instance extensions from all layers, including null_layer
     assert(dt->EnumerateInstanceExtensionProperties);
     instance_arrayof_extension_properties.clear();
@@ -1248,7 +1251,9 @@ DebugPrintf("200\n");
     }
 #endif
 
-DebugPrintf("300\n");
+
+
+DebugPrintf("300 ########## EnumerateAll<VkPhysicalDevice> \n");
     std::vector<VkPhysicalDevice> physical_devices;
     result = EnumerateAll<VkPhysicalDevice>(&physical_devices, [&](uint32_t *count, VkPhysicalDevice *results) {
         return dt->EnumeratePhysicalDevices(*pInstance, count, results);
@@ -1257,7 +1262,7 @@ DebugPrintf("300\n");
         return result;
     }
 
-DebugPrintf("400\n");
+DebugPrintf("400 ########## EnumerateAll<VkQueueFamilyProperties> \n");
     // For each physical device, create and populate a PDD instance.
     for (const auto &physical_device : physical_devices) {
         PhysicalDeviceData &pdd = PhysicalDeviceData::Create(physical_device, *pInstance);
@@ -1281,7 +1286,10 @@ DebugPrintf("400\n");
             }
         }
 
-DebugPrintf("500\n");
+
+
+
+DebugPrintf("500 ########## EnumerateAll<VkExtensionProperties> \n");
 #if 0
         // Get list of device extensions from all layers, including null_layer
         assert(dt->EnumerateDeviceExtensionProperties);
@@ -1305,6 +1313,11 @@ DebugPrintf("500\n");
         instance_arrayof_layer_properties.pop_back();
 #endif
 
+
+
+
+
+
 // TODO Is it really useful to preserve instance_arrayof_layer_properties?
 // TODO Seems that DevSim is not the way to modify Layers; use the Loader's capabilities.
 // TODO Should Instance Extensions be appended to each Devices' Extension list?
@@ -1314,7 +1327,7 @@ DebugPrintf("500\n");
         json_loader.LoadFiles(filename.c_str());
     }
 
-DebugPrintf("999\n");
+DebugPrintf("999 ##########\n");
     DebugPrintf("CreateInstance END instance %p }\n", *pInstance);
     return result;
 }
