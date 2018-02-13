@@ -50,8 +50,10 @@ rm -f ${FILENAME_01_RESULT} ${FILENAME_01_STDOUT} ${FILENAME_01_TEMP1} ${FILENAM
 
 # Generate test output using known-good input
 export VK_DEVSIM_FILENAME="${FILENAME_01_IN}"
-${VKJSON_INFO}
-[ $? -eq 0 ] || ERRMSG="${VKJSON_INFO} failed"
+pushd "${PWD}/../submodules/Vulkan-LoaderAndValidationLayers/demos"
+./cube --c 10
+[ $? -eq 0 ] || ERRMSG="vkjson_info failed"
+popd
 
 # extract/sort/reformat files for predictable comparison
 jq -S '{properties,features,memory,queues,formats}' ${FILENAME_01_GOLD} > ${FILENAME_01_TEMP1}
