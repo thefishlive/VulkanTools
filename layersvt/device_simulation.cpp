@@ -822,8 +822,6 @@ bool JsonLoader::LoadFile(const char *filename) {
             GetArray(root, "ArrayOfVkQueueFamilyProperties", &pdd_.arrayof_queue_family_properties_);
             GetArray(root, "ArrayOfVkFormatProperties", &pdd_.arrayof_format_properties_);
             GetArray(root, "ArrayOfVkExtensionProperties", &pdd_.arrayof_extension_properties_);
-            // TODO How to handle the ArrayOfVkLayerProperties section of devsim json?  Layers are not per-Device.
-            // GetArray(root, "ArrayOfVkLayerProperties", ???);
             break;
         case SchemaId::kUnknown:
         default:
@@ -1215,20 +1213,23 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo *pCreat
 
     const auto dt = instance_dispatch_table(*pInstance);
 
-    // TODO Get list of instance layers (Remember: device layers are deprecated)
+
+#if 0
     assert(dt->EnumerateInstanceLayerProperties);
-    instance_arrayof_layer_properties.clear();
     result = EnumerateAll<VkLayerProperties>(&instance_arrayof_layer_properties, [&](uint32_t *count, VkLayerProperties *results) {
         return dt->EnumerateInstanceLayerProperties(count, results);
     });
+DebugPrintf("110\n");
     if (result) {
         // TODO
         return result;
     }
+DebugPrintf("190 ########## EnumerateAll<VkExtensionProperties> \n");
     // Temporarily append a "null_layer" as a proxy for pLayerName==NULL in Enumerate*ExtensionProperties().
     const VkLayerProperties null_layer = {"", 0, 0, ""};
     instance_arrayof_layer_properties.push_back(null_layer);
 
+DebugPrintf("200 ########## \n");
     // Get list of instance extensions from all layers, including null_layer
     assert(dt->EnumerateInstanceExtensionProperties);
     instance_arrayof_extension_properties.clear();
@@ -1246,7 +1247,11 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo *pCreat
         // TODO should this keep extensions separate by layer, rather than one be list?
         VectorAppend(&instance_arrayof_extension_properties, &instance_extensions);
     }
+#endif
 
+
+
+DebugPrintf("300 ########## EnumerateAll<VkPhysicalDevice> \n");
     std::vector<VkPhysicalDevice> physical_devices;
     result = EnumerateAll<VkPhysicalDevice>(&physical_devices, [&](uint32_t *count, VkPhysicalDevice *results) {
         return dt->EnumeratePhysicalDevices(*pInstance, count, results);
@@ -1255,6 +1260,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo *pCreat
         return result;
     }
 
+DebugPrintf("400 ########## EnumerateAll<VkQueueFamilyProperties> \n");
     // For each physical device, create and populate a PDD instance.
     for (const auto &physical_device : physical_devices) {
         PhysicalDeviceData &pdd = PhysicalDeviceData::Create(physical_device, *pInstance);
@@ -1265,6 +1271,11 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo *pCreat
         dt->GetPhysicalDeviceFeatures(physical_device, &pdd.physical_device_features_);
         dt->GetPhysicalDeviceMemoryProperties(physical_device, &pdd.physical_device_memory_properties_);
 
+
+
+
+DebugPrintf("500 ########## EnumerateAll<VkExtensionProperties> \n");
+#if 0
         // Get list of device extensions from all layers, including null_layer
         assert(dt->EnumerateDeviceExtensionProperties);
         pdd.arrayof_extension_properties_.clear();
@@ -1285,6 +1296,12 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo *pCreat
         // Remove the temporary null_layer
         assert(instance_arrayof_layer_properties.size() > 0);
         instance_arrayof_layer_properties.pop_back();
+#endif
+
+
+
+
+
 
 // TODO Is it really useful to preserve instance_arrayof_layer_properties?
 // TODO Seems that DevSim is not the way to modify Layers; use the Loader's capabilities.
