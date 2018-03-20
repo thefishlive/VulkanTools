@@ -1213,9 +1213,12 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo *pCreat
 
     const auto dt = instance_dispatch_table(*pInstance);
 
+DebugPrintf("\t>>> EnumerateInstanceLayerProperties %p\n", dt->EnumerateInstanceLayerProperties);
+DebugPrintf("\t>>> EnumerateInstanceExtensionProperties %p\n", dt->EnumerateInstanceExtensionProperties);
+DebugPrintf("\t>>> EnumerateDeviceLayerProperties %p\n", dt->EnumerateDeviceLayerProperties);
+DebugPrintf("\t>>> EnumerateDeviceExtensionProperties %p\n", dt->EnumerateDeviceExtensionProperties);
 
 #if 0
-    assert(dt->EnumerateInstanceLayerProperties);
     result = EnumerateAll<VkLayerProperties>(&instance_arrayof_layer_properties, [&](uint32_t *count, VkLayerProperties *results) {
         return dt->EnumerateInstanceLayerProperties(count, results);
     });
