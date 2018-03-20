@@ -430,8 +430,9 @@ uint32_t loader_layer_iface_version = CURRENT_LOADER_LAYER_INTERFACE_VERSION;
 
 typedef std::vector<VkQueueFamilyProperties> ArrayOfVkQueueFamilyProperties;
 typedef std::unordered_map<uint32_t /*VkFormat*/, VkFormatProperties> ArrayOfVkFormatProperties;
-typedef std::vector<VkLayerProperties> ArrayOfVkLayerProperties;
-typedef std::vector<VkExtensionProperties> ArrayOfVkExtensionProperties;
+typedef std::vector<VkLayerProperties> ArrayOfVkLayerProperties;                // Instance only
+typedef std::vector<VkExtensionProperties> ArrayOfVkExtensionProperties;        // Instance only
+typedef std::unordered_map<std::string, ArrayOfVkExtensionProperties> ArrayOfVkDeviceExtensionProperties;  // Device only
 
 ArrayOfVkLayerProperties instance_arrayof_layer_properties;
 ArrayOfVkExtensionProperties instance_arrayof_extension_properties;
@@ -491,8 +492,7 @@ class PhysicalDeviceData {
     VkPhysicalDeviceMemoryProperties physical_device_memory_properties_;
     ArrayOfVkQueueFamilyProperties arrayof_queue_family_properties_;
     ArrayOfVkFormatProperties arrayof_format_properties_;
-    ArrayOfVkExtensionProperties arrayof_extension_properties_;
-    // TODO NOTE: There is no ArrayOfVkLayerProperties for PhysicalDevices; layers are per-Instance only.
+    ArrayOfVkDeviceExtensionProperties arrayof_device_extension_properties_; // FUTURE
 
    private:
     PhysicalDeviceData() = delete;
@@ -541,8 +541,9 @@ class JsonLoader {
     void GetValue(const Json::Value &parent, const char *name, VkExtent3D *dest);
     void GetValue(const Json::Value &parent, int index, VkQueueFamilyProperties *dest);
     void GetValue(const Json::Value &parent, int index, DevsimFormatProperties *dest);
-    void GetValue(const Json::Value &parent, int index, VkLayerProperties *dest);
-    void GetValue(const Json::Value &parent, int index, VkExtensionProperties *dest);
+    void GetValue(const Json::Value &parent, int index, VkLayerProperties *dest);       // Instance
+    void GetValue(const Json::Value &parent, int index, VkExtensionProperties *dest);   // Instance
+    //void GetValue(const Json::Value &parent, int index, DevsimDeviceExtensionProperties *dest);   // FUTURE
 
     // For use as warn_func in GET_VALUE_WARN().  Return true if warning occurred.
     static bool WarnIfGreater(const char *name, const uint64_t new_value, const uint64_t old_value) {
@@ -768,6 +769,25 @@ class JsonLoader {
         return static_cast<int>(dest->size());
     }
 
+    int GetArray(const Json::Value &parent, const char *name, ArrayOfVkDeviceExtensionProperties *dest) {
+        const Json::Value value = parent[name];
+        if (value.type() != Json::arrayValue) {
+            return -1;
+        }
+        DebugPrintf("\t\tJsonLoader::GetValue(ArrayOfVkDeviceExtensionProperties)\n");
+        dest->clear();
+        const int count = static_cast<int>(value.size());
+#if 0   // FUTURE.  see GetArray(ArrayOfVkFormatProperties)
+        for (int i = 0; i < count; ++i) {
+            DevsimDeviceExtensionProperties devsim_device_extension_properties = {};
+            GetValue(value, i, &devsim_device_extension_properties);
+            ...
+            dest->insert({format, vk_format_properties});
+        }
+#endif
+        return static_cast<int>(dest->size());
+    }
+
     PhysicalDeviceData &pdd_;
 };
 
@@ -821,7 +841,7 @@ bool JsonLoader::LoadFile(const char *filename) {
             GetValue(root, "VkPhysicalDeviceMemoryProperties", &pdd_.physical_device_memory_properties_);
             GetArray(root, "ArrayOfVkQueueFamilyProperties", &pdd_.arrayof_queue_family_properties_);
             GetArray(root, "ArrayOfVkFormatProperties", &pdd_.arrayof_format_properties_);
-            GetArray(root, "ArrayOfVkExtensionProperties", &pdd_.arrayof_extension_properties_);
+            GetArray(root, "ArrayOfVkDeviceExtensionProperties", &pdd_.arrayof_device_extension_properties_); // FUTURE
             break;
         case SchemaId::kUnknown:
         default:
