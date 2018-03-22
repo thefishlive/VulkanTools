@@ -1513,6 +1513,7 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFormatProperties2KHR(VkPhysicalDevic
 }
 
 VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL GetInstanceProcAddr(VkInstance instance, const char *pName) {
+DebugPrintf("GetInstanceProcAddr(\"%s\")\n", pName);
 // Apply the DRY principle, see https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
 #define GET_PROC_ADDR(func) \
     if (strcmp("vk" #func, pName) == 0) return reinterpret_cast<PFN_vkVoidFunction>(func);
