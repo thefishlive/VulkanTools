@@ -1231,26 +1231,23 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo *pCreat
 
     const auto dt = instance_dispatch_table(*pInstance);
 
-DebugPrintf("\t>>> EnumerateInstanceLayerProperties %p\n", dt->EnumerateInstanceLayerProperties);
-DebugPrintf("\t>>> EnumerateInstanceExtensionProperties %p\n", dt->EnumerateInstanceExtensionProperties);
-DebugPrintf("\t>>> EnumerateDeviceLayerProperties %p\n", dt->EnumerateDeviceLayerProperties);
-DebugPrintf("\t>>> EnumerateDeviceExtensionProperties %p\n", dt->EnumerateDeviceExtensionProperties);
+DebugPrintf("\t>>> dt->EnumerateInstanceLayerProperties %p\n", dt->EnumerateInstanceLayerProperties);
+DebugPrintf("\t>>> dt->EnumerateInstanceExtensionProperties %p\n", dt->EnumerateInstanceExtensionProperties);
+DebugPrintf("\t>>> dt->EnumerateDeviceLayerProperties %p\n", dt->EnumerateDeviceLayerProperties);
+DebugPrintf("\t>>> dt->EnumerateDeviceExtensionProperties %p\n", dt->EnumerateDeviceExtensionProperties);
 
 #if 0
     result = EnumerateAll<VkLayerProperties>(&instance_arrayof_layer_properties, [&](uint32_t *count, VkLayerProperties *results) {
         return dt->EnumerateInstanceLayerProperties(count, results);
     });
-DebugPrintf("110\n");
     if (result) {
         // TODO
         return result;
     }
-DebugPrintf("190 ########## EnumerateAll<VkExtensionProperties> \n");
     // Temporarily append a "null_layer" as a proxy for pLayerName==NULL in Enumerate*ExtensionProperties().
     const VkLayerProperties null_layer = {"", 0, 0, ""};
     instance_arrayof_layer_properties.push_back(null_layer);
 
-DebugPrintf("200 ########## \n");
     // Get list of instance extensions from all layers, including null_layer
     assert(dt->EnumerateInstanceExtensionProperties);
     instance_arrayof_extension_properties.clear();
@@ -1270,9 +1267,6 @@ DebugPrintf("200 ########## \n");
     }
 #endif
 
-
-
-DebugPrintf("300 ########## EnumerateAll<VkPhysicalDevice> \n");
     std::vector<VkPhysicalDevice> physical_devices;
     result = EnumerateAll<VkPhysicalDevice>(&physical_devices, [&](uint32_t *count, VkPhysicalDevice *results) {
         return dt->EnumeratePhysicalDevices(*pInstance, count, results);
@@ -1281,7 +1275,6 @@ DebugPrintf("300 ########## EnumerateAll<VkPhysicalDevice> \n");
         return result;
     }
 
-DebugPrintf("400 ########## EnumerateAll<VkQueueFamilyProperties> \n");
     // For each physical device, create and populate a PDD instance.
     for (const auto &physical_device : physical_devices) {
         PhysicalDeviceData &pdd = PhysicalDeviceData::Create(physical_device, *pInstance);
@@ -1292,10 +1285,6 @@ DebugPrintf("400 ########## EnumerateAll<VkQueueFamilyProperties> \n");
         dt->GetPhysicalDeviceFeatures(physical_device, &pdd.physical_device_features_);
         dt->GetPhysicalDeviceMemoryProperties(physical_device, &pdd.physical_device_memory_properties_);
 
-
-
-
-DebugPrintf("500 ########## EnumerateAll<VkExtensionProperties> \n");
 #if 0
         // Get list of device extensions from all layers, including null_layer
         assert(dt->EnumerateDeviceExtensionProperties);
@@ -1318,11 +1307,6 @@ DebugPrintf("500 ########## EnumerateAll<VkExtensionProperties> \n");
         assert(instance_arrayof_layer_properties.size() > 0);
         instance_arrayof_layer_properties.pop_back();
 #endif
-
-
-
-
-
 
 // TODO Is it really useful to preserve instance_arrayof_layer_properties?
 // TODO Seems that DevSim is not the way to modify Layers; use the Loader's capabilities.
