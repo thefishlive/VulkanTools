@@ -430,14 +430,11 @@ uint32_t loader_layer_iface_version = CURRENT_LOADER_LAYER_INTERFACE_VERSION;
 
 typedef std::vector<VkQueueFamilyProperties> ArrayOfVkQueueFamilyProperties;
 typedef std::unordered_map<uint32_t /*VkFormat*/, VkFormatProperties> ArrayOfVkFormatProperties;
-typedef std::vector<VkLayerProperties> ArrayOfVkLayerProperties;                // Instance only
-typedef std::vector<VkExtensionProperties> ArrayOfVkExtensionProperties;        // Instance only
-typedef std::unordered_map<std::string, ArrayOfVkExtensionProperties> ArrayOfVkDeviceExtensionProperties;  // Device only
-
-ArrayOfVkLayerProperties instance_arrayof_layer_properties;
-ArrayOfVkExtensionProperties instance_arrayof_extension_properties;
 
 typedef std::vector<VkLayerProperties> ArrayOfVkLayerProperties;
+typedef std::vector<VkExtensionProperties> ArrayOfVkExtensionProperties;        // Instance only, pLayerName == nullptr
+
+typedef std::unordered_map<std::string, ArrayOfVkExtensionProperties> ArrayOfVkDeviceExtensionProperties;  // Device only
 
 // ArrayOfVkLayerProperties: { "type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/VkLayerProperties"} },
 // ArrayOfVkExtensionProperties: { "type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/VkExtensionProperties"} },
